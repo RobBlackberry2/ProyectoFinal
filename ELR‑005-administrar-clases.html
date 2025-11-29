@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ELR-005 - Asignar Clases Virtuales</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">NHS</div>
+        <div>
+          <div style="font-weight:700">New Hope School</div>
+          <div style="font-size:12px;color:var(--muted)">Página oficial</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Inicio</a>
+        <a href="#servicios">Administrativo</a>
+        <a href="#servicios">Gestión de Usuarios</a>
+        <a href="#servicios">Reportes</a>
+        <a href="elr-006-eliminar-clases.html">E-Learning</a>
+        <a href="index.html">Contacto</a>
+      </nav>
+    </header>
+
+    <main class="hero">
+      <div class="card">
+        <h1>ELR-005: Asignar Clases Virtuales</h1>
+        <p class="lead">
+          <strong>Historia de usuario:</strong> Como administrador quiero asignar las clases virtuales a cada asignatura de cada nivel académico.
+        </p>
+
+        <form id="formAsignacion">
+          <label>ID Clase Virtual</label>
+          <input type="text" id="id_clase" required />
+
+          <label>ID Asignatura</label>
+          <input type="text" id="id_asignatura" required />
+
+          <label>Nivel Académico</label>
+          <select id="nivel_academico" required>
+            <option value="">Seleccione</option>
+            <option>Septimo</option>
+            <option>Octavo</option>
+            <option>Noveno</option>
+            <option>Décimo</option>
+            <option>Undécimo</option>
+          </select>
+
+          <label>ID Grupo</label>
+          <input type="text" id="id_grupo" required />
+
+          <label>Docente</label>
+          <input type="text" id="docente" required />
+
+          <button type="submit">Asignar Clase Virtual</button>
+          <div id="mensaje" class="msg"></div>
+        </form>
+      </div>
+    </main>
+
+    <footer>
+      <div style="max-width:800px;margin:0 auto">
+        © <span id="year"></span> New Hope Digital Learning
+        <span style="color:var(--muted)">Versión demo</span>
+      </div>
+    </footer>
+  </div>
+
+<script>
+  const form = document.getElementById('formAsignacion');
+  const mensaje = document.getElementById('mensaje');
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const datos = {
+      id_clase: id_clase.value.trim(),
+      id_asignatura: id_asignatura.value.trim(),
+      nivel_academico: nivel_academico.value.trim(),
+      id_grupo: id_grupo.value.trim(),
+      docente: docente.value.trim()
+    };
+
+    // Validación: campos vacíos
+    for(const campo in datos){
+      if(!datos[campo]){
+        mostrarMensaje('err','Hay espacios obligatorios vacíos.');
+        return;
+      }
+    }
+
+    // Validación: caracteres inválidos
+    const regexInvalido = /[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\-]/;
+    if(regexInvalido.test(datos.id_clase) ||
+       regexInvalido.test(datos.id_asignatura) ||
+       regexInvalido.test(datos.nivel_academico) ||
+       regexInvalido.test(datos.id_grupo) ||
+       regexInvalido.test(datos.docente)){
+      mostrarMensaje('err','Los datos ingresados son inválidos.');
+      return;
+    }
+
+    // Si todo está correcto
+    mostrarMensaje('ok','La clase virtual fue asignada exitosamente.');
+    form.reset();
+  });
+
+  function mostrarMensaje(tipo,texto){
+    mensaje.className = 'msg ' + (tipo === 'ok' ? 'ok' : 'err');
+    mensaje.textContent = texto;
+    mensaje.style.display = 'block';
+  }
+</script>
+</body>
+</html>

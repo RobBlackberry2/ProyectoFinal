@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ELR-039 - Crear Retos o Misiones Académicas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="brand">
+      <div class="logo">NHS</div>
+      <div>
+        <div style="font-weight:700">New Hope School</div>
+        <div style="font-size:12px;color:var(--muted)">Página oficial</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="#servicios">Administrativo</a>
+      <a href="#servicios">Gestión de Usuarios</a>
+      <a href="#servicios">Reportes</a>
+      <a href="ELR-040 - Actualizar Retos o Misiones Académicas.html">E-Learning</a>
+      <a href="index.html">Contacto</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <div class="card">
+      <h1>ELR-039: Crear Retos o Misiones Académicas</h1>
+      <p class="lead">
+        <strong>Historia de usuario:</strong> Como docente quiero crear retos o misiones académicas para promover la competitividad estudiantil.
+      </p>
+
+      <!-- Formulario de creación de retos -->
+      <form id="formReto">
+        <label>Nombre del reto/misión</label>
+        <input type="text" id="nombre" required />
+
+        <label>Descripción</label>
+        <textarea id="descripcion" rows="3" required></textarea>
+
+        <label>Fecha límite</label>
+        <input type="date" id="fecha_limite" required />
+
+        <button type="submit">Crear Reto/Misión</button>
+        <div id="mensaje" class="msg"></div>
+      </form>
+
+      <!-- Resultado -->
+      <h3 style="margin-top:20px">Retos/Misiones creadas</h3>
+      <div id="resultado" class="lista"></div>
+    </div>
+  </main>
+
+  <footer>
+    <div style="max-width:800px;margin:0 auto">
+      © <span id="year"></span> New Hope Digital Learning
+      <span style="color:var(--muted)">Versión demo</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+  const form = document.getElementById('formReto');
+  const mensaje = document.getElementById('mensaje');
+  const resultado = document.getElementById('resultado');
+
+  let retos = [];
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const datos = {
+      nombre: nombre.value.trim(),
+      descripcion: descripcion.value.trim(),
+      fecha_limite: fecha_limite.value.trim()
+    };
+
+    // Simulación de error de conexión (10% probabilidad)
+    const falloConexion = Math.random() < 0.1;
+    if(falloConexion){
+      mostrarMensaje('err','No fue posible realizar la acción. Intente nuevamente más tarde.');
+      return;
+    }
+
+    // Validación: campos vacíos
+    if(!datos.nombre || !datos.descripcion || !datos.fecha_limite){
+      mostrarMensaje('err','El reto o misión no se creó porque algún campo requerido no se completó.');
+      return;
+    }
+
+    // Registro correcto
+    retos.push(datos);
+    mostrarMensaje('ok','El reto o misión fue creado exitosamente y aparecerá en la clase virtual.');
+    resultado.innerHTML = retos.map(r=>`
+      <div class="form-contenido">
+        <strong>${r.nombre}</strong><br>
+        Descripción: ${r.descripcion}<br>
+        Fecha límite: ${new Date(r.fecha_limite).toLocaleDateString()}<br>
+        Premio: 🏅 Medalla para quien lo logre
+      </div>
+    `).join("");
+    form.reset();
+  });
+
+  function mostrarMensaje(tipo,texto){
+    mensaje.className = 'msg ' + (tipo === 'ok' ? 'ok' : 'err');
+    mensaje.textContent = texto;
+    mensaje.style.display = 'block';
+  }
+
+  // Año dinámico en footer
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ELR-026 - Cargar Evaluaciones y Asignaciones</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="brand">
+      <div class="logo">NHS</div>
+      <div>
+        <div style="font-weight:700">New Hope School</div>
+        <div style="font-size:12px;color:var(--muted)">Página oficial</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="#servicios">Administrativo</a>
+      <a href="#servicios">Gestión de Usuarios</a>
+      <a href="#servicios">Reportes</a>
+      <a href="ELR-027-Calificar-Evaluaciones.html">E-Learning</a>
+      <a href="index.html">Contacto</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <div class="card">
+      <h1>ELR-026: Cargar Evaluaciones y Asignaciones</h1>
+      <p class="lead">
+        <strong>Historia de usuario:</strong> Como estudiante quiero poder cargar las evaluaciones y asignaciones cuando tengo que hacer entregas.
+      </p>
+
+      <!-- Formulario de carga -->
+      <form id="formEntrega">
+        <label>ID Evaluación</label>
+        <input type="text" id="id_evaluacion" required />
+
+        <label>Archivo de entrega</label>
+        <input type="file" id="archivo" accept=".pdf,.doc,.docx,.txt" required />
+
+        <label>Fecha límite (previamente definida por el docente) El estudiante no la puede modificar</label>
+        <input type="date" id="fecha_limite" required />
+
+        <button type="submit">Cargar Evaluación</button>
+        <div id="mensaje" class="msg"></div>
+      </form>
+
+      <!-- Resultado -->
+      <h3 style="margin-top:20px">Resultado</h3>
+      <div id="resultado" class="lista"></div>
+    </div>
+  </main>
+
+  <footer>
+    <div style="max-width:800px;margin:0 auto">
+      © <span id="year"></span> New Hope Digital Learning
+      <span style="color:var(--muted)">Versión demo</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+  const form = document.getElementById('formEntrega');
+  const mensaje = document.getElementById('mensaje');
+  const resultado = document.getElementById('resultado');
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const idEvaluacion = id_evaluacion.value.trim();
+    const archivoInput = archivo.files[0];
+    const fechaLimite = new Date(fecha_limite.value);
+    const fechaActual = new Date();
+
+    // Validación: campos vacíos
+    if(!idEvaluacion || !archivoInput || !fechaLimite){
+      mostrarMensaje('err','Hay campos obligatorios sin completar.');
+      return;
+    }
+
+    // Validación: fuera de tiempo
+    if(fechaActual > fechaLimite){
+      mostrarMensaje('err','El tiempo de entrega ha expirado. La tarea no fue registrada.');
+      return;
+    }
+
+    // Simulación de error de conexión (10% probabilidad)
+    const falloConexion = Math.random() < 0.1;
+    if(falloConexion){
+      mostrarMensaje('err','No fue posible realizar la entrega. Intente más tarde.');
+      return;
+    }
+
+    // Validación: archivo incompleto (simulación: tamaño < 1KB)
+    if(archivoInput.size < 1024){
+      mostrarMensaje('err','La tarea está incompleta. ¿Desea continuar o enviar incompleta?');
+      resultado.innerHTML = `
+        <button onclick="continuarEntrega()">Continuar</button>
+        <button onclick="enviarIncompleta()">Enviar incompleta</button>
+      `;
+      return;
+    }
+
+    // Entrega exitosa
+    mostrarMensaje('ok','La evaluación fue cargada exitosamente. Se envió confirmación.');
+    resultado.innerHTML = `<div class="form-contenido">
+      <strong>ID Evaluación:</strong> ${idEvaluacion}<br>
+      Archivo: ${archivoInput.name}<br>
+      Fecha entrega: ${fechaLimite.toLocaleDateString()}<br>
+      Estado: ✅ Entrega registrada
+    </div>`;
+    form.reset();
+  });
+
+  function continuarEntrega(){
+    mostrarMensaje('ok','Continuando con la carga de la tarea...');
+    resultado.innerHTML = '';
+  }
+
+  function enviarIncompleta(){
+    mostrarMensaje('ok','La tarea incompleta fue enviada bajo responsabilidad del estudiante.');
+    resultado.innerHTML = '<div class="form-contenido">⚠️ Entrega incompleta registrada</div>';
+  }
+
+  function mostrarMensaje(tipo,texto){
+    mensaje.className = 'msg ' + (tipo === 'ok' ? 'ok' : 'err');
+    mensaje.textContent = texto;
+    mensaje.style.display = 'block';
+  }
+
+  // Año dinámico en footer
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

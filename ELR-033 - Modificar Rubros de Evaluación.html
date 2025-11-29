@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ELR-033 - Modificar Rubros de Evaluación</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="brand">
+      <div class="logo">NHS</div>
+      <div>
+        <div style="font-weight:700">New Hope School</div>
+        <div style="font-size:12px;color:var(--muted)">Página oficial</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="#servicios">Administrativo</a>
+      <a href="#servicios">Gestión de Usuarios</a>
+      <a href="#servicios">Reportes</a>
+      <a href="ELR-034 - Evaluar con Rubros.html">E-Learning</a>
+      <a href="index.html">Contacto</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <div class="card">
+      <h1>ELR-033: Modificar Rubros de Evaluación</h1>
+      <p class="lead">
+        <strong>Historia de usuario:</strong> Como docente quiero modificar rubros (criterios de evaluación) para actualizar cómo se califican las tareas.
+      </p>
+
+      <!-- Formulario de modificación de rubros -->
+      <form id="formRubros">
+        <label>ID Evaluación</label>
+        <input type="text" id="id_evaluacion" required />
+
+        <label>Nombre del rubro</label>
+        <input type="text" id="nombre_rubro" required />
+
+        <label>Descripción</label>
+        <textarea id="descripcion" rows="3" required></textarea>
+
+        <label>Valor (%)</label>
+        <input type="number" id="valor" min="1" max="100" required />
+
+        <button type="submit">Modificar Rubro</button>
+        <div id="mensaje" class="msg"></div>
+      </form>
+
+      <!-- Resultado -->
+      <h3 style="margin-top:20px">Rubros actuales</h3>
+      <div id="resultado" class="lista"></div>
+    </div>
+  </main>
+
+  <footer>
+    <div style="max-width:800px;margin:0 auto">
+      © <span id="year"></span> New Hope Digital Learning
+      <span style="color:var(--muted)">Versión demo</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+  const form = document.getElementById('formRubros');
+  const mensaje = document.getElementById('mensaje');
+  const resultado = document.getElementById('resultado');
+
+  // Array para acumular rubros
+  let rubros = [
+    {id_evaluacion:"EV1", nombre_rubro:"Contenido", descripcion:"Calidad del contenido", valor:40},
+    {id_evaluacion:"EV1", nombre_rubro:"Presentación", descripcion:"Claridad y formato", valor:30},
+    {id_evaluacion:"EV1", nombre_rubro:"Originalidad", descripcion:"Creatividad en el trabajo", valor:30}
+  ];
+
+  mostrarRubros();
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const datos = {
+      id_evaluacion: id_evaluacion.value.trim(),
+      nombre_rubro: nombre_rubro.value.trim(),
+      descripcion: descripcion.value.trim(),
+      valor: parseInt(valor.value.trim())
+    };
+
+    // Validación: campos vacíos
+    if(!datos.id_evaluacion || !datos.nombre_rubro || !datos.descripcion || isNaN(datos.valor)){
+      mostrarMensaje('err','Se dejaron espacios obligatorios sin rellenar.');
+      return;
+    }
+
+    // Validación: caracteres inválidos (simulación: no permitir símbolos raros en nombre)
+    const regex = /^[a-zA-Z0-9\s]+$/;
+    if(!regex.test(datos.nombre_rubro)){
+      mostrarMensaje('err','Se ingresaron caracteres inválidos. Los rubros no fueron modificados.');
+      return;
+    }
+
+    // Modificar rubro existente (simulación: reemplazar el primero con mismo id_evaluacion)
+    const index = rubros.findIndex(r=>r.id_evaluacion===datos.id_evaluacion);
+    if(index !== -1){
+      rubros[index] = datos;
+    } else {
+      rubros.push(datos);
+    }
+
+    // Validación: suma de valores debe ser 100
+    const suma = rubros.reduce((acc,r)=>acc+r.valor,0);
+    if(suma !== 100){
+      mostrarMensaje('err','La suma de los rubros siempre debe ser 100. Actualmente: '+suma);
+      return;
+    }
+
+    // Rubro modificado correctamente
+    mostrarMensaje('ok','Los rubros fueron modificados y actualizados a la evaluación.');
+    mostrarRubros();
+    form.reset();
+  });
+
+  function mostrarRubros(){
+    resultado.innerHTML = rubros.map(r=>`
+      <div class="form-contenido">
+        <strong>${r.nombre_rubro}</strong><br>
+        Descripción: ${r.descripcion}<br>
+        Valor: ${r.valor}%<br>
+        Evaluación: ${r.id_evaluacion}
+      </div>
+    `).join("");
+  }
+
+  function mostrarMensaje(tipo,texto){
+    mensaje.className = 'msg ' + (tipo === 'ok' ? 'ok' : 'err');
+    mensaje.textContent = texto;
+    mensaje.style.display = 'block';
+  }
+
+  // Año dinámico en footer
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

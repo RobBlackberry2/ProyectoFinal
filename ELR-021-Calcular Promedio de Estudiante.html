@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ELR-021 - Calcular Promedio de Estudiante</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="brand">
+      <div class="logo">NHS</div>
+      <div>
+        <div style="font-weight:700">New Hope School</div>
+        <div style="font-size:12px;color:var(--muted)">Página oficial</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="#servicios">Administrativo</a>
+      <a href="#servicios">Gestión de Usuarios</a>
+      <a href="#servicios">Reportes</a>
+      <a href="ELR-022 - Definir Porcentaje de Evaluaciones.html">E-Learning</a>
+      <a href="index.html">Contacto</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <div class="card">
+      <h1>ELR-021: Calcular Promedio de Estudiante</h1>
+      <p class="lead">
+        <strong>Historia de usuario:</strong> Como administrador quiero que el sistema registre las notas de las evaluaciones y calcule automáticamente el promedio del estudiante por medio de una fórmula ponderada.
+      </p>
+
+      <form id="formPromedio">
+        <label>ID Estudiante</label>
+        <input type="text" id="id_estudiante" required />
+
+        <h3>Evaluaciones</h3>
+        <div id="evaluaciones">
+          <!-- Primer bloque de evaluación -->
+          <div class="evaluacion">
+            <label>Nota obtenida</label>
+            <input type="number" class="nota" min="0" max="100" required />
+            <label>Porcentaje</label>
+            <input type="number" class="porcentaje" min="1" max="100" required />
+          </div>
+        </div>
+
+        <button type="button" id="agregar">Agregar otra evaluación</button>
+        <button type="submit">Calcular Promedio</button>
+        <div id="mensaje" class="msg"></div>
+      </form>
+
+      <!-- Resultado -->
+      <h3 style="margin-top:20px">Resultado</h3>
+      <div id="resultado" class="lista"></div>
+    </div>
+  </main>
+
+  <footer>
+    <div style="max-width:800px;margin:0 auto">
+      © <span id="year"></span> New Hope Digital Learning
+      <span style="color:var(--muted)">Versión demo</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+  const form = document.getElementById('formPromedio');
+  const mensaje = document.getElementById('mensaje');
+  const resultado = document.getElementById('resultado');
+  const evaluacionesDiv = document.getElementById('evaluaciones');
+  const agregarBtn = document.getElementById('agregar');
+
+  // Botón para agregar más evaluaciones
+  agregarBtn.addEventListener('click', () => {
+    const nuevaEval = document.createElement('div');
+    nuevaEval.classList.add('evaluacion');
+    nuevaEval.innerHTML = `
+      <label>Nota obtenida</label>
+      <input type="number" class="nota" min="0" max="100" required />
+      <label>Porcentaje</label>
+      <input type="number" class="porcentaje" min="1" max="100" required />
+    `;
+    evaluacionesDiv.appendChild(nuevaEval);
+  });
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const idEstudiante = document.getElementById('id_estudiante').value.trim();
+    if(!idEstudiante){
+      mostrarMensaje('err','Debe ingresar el ID del estudiante.');
+      return;
+    }
+
+    const notas = document.querySelectorAll('.nota');
+    const porcentajes = document.querySelectorAll('.porcentaje');
+
+    let sumaPonderada = 0;
+    let sumaPorcentajes = 0;
+
+    for(let i=0; i<notas.length; i++){
+      const nota = parseFloat(notas[i].value);
+      const porcentaje = parseFloat(porcentajes[i].value);
+
+      if(isNaN(nota) || isNaN(porcentaje)){
+        mostrarMensaje('err','Revise las notas y porcentajes ingresados.');
+        return;
+      }
+
+      sumaPonderada += nota * (porcentaje/100);
+      sumaPorcentajes += porcentaje;
+    }
+
+    if(sumaPorcentajes !== 100){
+      mostrarMensaje('err','La suma de los porcentajes debe ser exactamente 100%. Actualmente es ' + sumaPorcentajes + '%.');
+      return;
+    }
+
+    mostrarMensaje('ok','El promedio se calculó correctamente.');
+    resultado.innerHTML = `<div class="form-contenido">
+      <strong>ID Estudiante:</strong> ${idEstudiante}<br>
+      Promedio final ponderado: ${sumaPonderada.toFixed(2)}%
+    </div>`;
+    form.reset();
+    evaluacionesDiv.innerHTML = `
+      <div class="evaluacion">
+        <label>Nota obtenida</label>
+        <input type="number" class="nota" min="0" max="100" required />
+        <label>Porcentaje</label>
+        <input type="number" class="porcentaje" min="1" max="100" required />
+      </div>`;
+  });
+
+  function mostrarMensaje(tipo,texto){
+    mensaje.className = 'msg ' + (tipo === 'ok' ? 'ok' : 'err');
+    mensaje.textContent = texto;
+    mensaje.style.display = 'block';
+  }
+
+  // Año dinámico en footer
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

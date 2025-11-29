@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ELR-031 - Eliminar Entregas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="brand">
+      <div class="logo">NHS</div>
+      <div>
+        <div style="font-weight:700">New Hope School</div>
+        <div style="font-size:12px;color:var(--muted)">Página oficial</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="#servicios">Administrativo</a>
+      <a href="#servicios">Gestión de Usuarios</a>
+      <a href="#servicios">Reportes</a>
+      <a href="ELR-032 - Crear Rubros de Evaluación.html">E-Learning</a>
+      <a href="index.html">Contacto</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <div class="card">
+      <h1>ELR-031: Eliminar Entregas</h1>
+      <p class="lead">
+        <strong>Historia de usuario:</strong> Como estudiante quiero eliminar el archivo o las respuestas registradas en una tarea o evaluación para realizar correcciones antes de su fecha límite de entrega.
+      </p>
+
+      <h3>Mis Entregas</h3>
+      <div id="listaEntregas" class="lista">
+        <!-- Caso 1: Entrega registrada y editable -->
+        <div class="form-contenido" data-id="E1" data-estado="entregado" data-fecha_limite="2025-11-30T23:59:00">
+          <h3>Tarea Semana 1</h3>
+          <p>Archivo: tarea1.pdf | Estado: ✅ Entregado</p>
+          <button onclick="confirmarBorrado('E1')">Eliminar entrega</button>
+        </div>
+
+        <!-- Caso 2: Entrega fuera de tiempo -->
+        <div class="form-contenido" data-id="E2" data-estado="entregado" data-fecha_limite="2025-11-15T23:59:00">
+          <h3>Examen Diagnóstico</h3>
+          <p>Archivo: examen.pdf | Estado: ✅ Entregado</p>
+          <!-- No se muestra botón porque ya pasó fecha límite -->
+        </div>
+      </div>
+
+      <!-- Mensajes -->
+      <div id="mensaje" class="msg"></div>
+
+      <!-- Resultado -->
+      <h3 style="margin-top:20px">Resultado</h3>
+      <div id="resultado" class="lista"></div>
+    </div>
+  </main>
+
+  <footer>
+    <div style="max-width:800px;margin:0 auto">
+      © <span id="year"></span> New Hope Digital Learning
+      <span style="color:var(--muted)">Versión demo</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+  const mensaje = document.getElementById('mensaje');
+  const resultado = document.getElementById('resultado');
+
+  function confirmarBorrado(id){
+    const entrega = document.querySelector(`[data-id="${id}"]`);
+    const fechaLimite = new Date(entrega.dataset.fecha_limite);
+    const fechaActual = new Date();
+
+    // Caso 2: Ya pasó la fecha límite
+    if(fechaActual > fechaLimite){
+      mostrarMensaje('err','La tarea ya no tiene más tiempo de entrega. No se puede borrar.');
+      return;
+    }
+
+    // Simulación de error de conexión (10% probabilidad)
+    const falloConexion = Math.random() < 0.1;
+    if(falloConexion){
+      mostrarMensaje('err','No fue posible realizar la acción. Intente nuevamente más tarde.');
+      return;
+    }
+
+    // Confirmación de borrado
+    if(confirm("¿Está seguro de eliminar la entrega?")){
+      entrega.remove();
+      mostrarMensaje('ok','La tarea se borró exitosamente.');
+      resultado.innerHTML = `<div class="form-contenido">
+        <strong>${id}</strong><br>
+        Estado: ❌ Entrega eliminada
+      </div>`;
+    }
+  }
+
+  function mostrarMensaje(tipo,texto){
+    mensaje.className = 'msg ' + (tipo === 'ok' ? 'ok' : 'err');
+    mensaje.textContent = texto;
+    mensaje.style.display = 'block';
+  }
+
+  // Año dinámico en footer
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

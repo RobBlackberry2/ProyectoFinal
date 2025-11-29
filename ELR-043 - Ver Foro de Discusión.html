@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ELR-043 - Ver Foro de Discusión</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="brand">
+      <div class="logo">NHS</div>
+      <div>
+        <div style="font-weight:700">New Hope School</div>
+        <div style="font-size:12px;color:var(--muted)">Página oficial</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="#servicios">Administrativo</a>
+      <a href="#servicios">Gestión de Usuarios</a>
+      <a href="#servicios">Reportes</a>
+      <a href="ELR-044 - Publicar en Foro de Discusión.html">E-Learning</a>
+      <a href="index.html">Contacto</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <div class="card">
+      <h1>ELR-043: Ver Foro de Discusión</h1>
+      <p class="lead">
+        <strong>Historia de usuario:</strong> Como estudiante quiero ver el foro de discusión para externar mi opinión o mis dudas sobre el tema.
+      </p>
+
+      <h3>Foros disponibles</h3>
+      <div id="listaForos" class="lista">
+        <!-- Caso 1: Foro disponible -->
+        <div class="form-contenido" data-id="F1" data-permiso="true">
+          <h3>Tema: Energías renovables</h3>
+          <p>Comentarios:</p>
+          <ul>
+            <li>Estudiante A: Creo que la energía solar es la más viable.</li>
+            <li>Estudiante B: La eólica también es muy prometedora.</li>
+          </ul>
+          <button onclick="verForo('F1')">Abrir foro</button>
+        </div>
+
+        <!-- Caso 2: Foro sin permisos -->
+        <div class="form-contenido" data-id="F2" data-permiso="false">
+          <h3>Tema: Historia de Costa Rica</h3>
+          <button onclick="verForo('F2')">Abrir foro</button>
+        </div>
+      </div>
+
+      <!-- Mensajes -->
+      <div id="mensaje" class="msg"></div>
+
+      <!-- Resultado -->
+      <h3 style="margin-top:20px">Detalle del Foro</h3>
+      <div id="resultado" class="lista"></div>
+    </div>
+  </main>
+
+  <footer>
+    <div style="max-width:800px;margin:0 auto">
+      © <span id="year"></span> New Hope Digital Learning
+      <span style="color:var(--muted)">Versión demo</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+  const mensaje = document.getElementById('mensaje');
+  const resultado = document.getElementById('resultado');
+
+  function verForo(id){
+    // Simulación de error de conexión (10% probabilidad)
+    const falloConexion = Math.random() < 0.1;
+    if(falloConexion){
+      mostrarMensaje('err','No fue posible realizar la acción. Intente nuevamente más tarde.');
+      return;
+    }
+
+    const foro = document.querySelector(`[data-id="${id}"]`);
+    const permiso = foro.dataset.permiso === "true";
+
+    if(!permiso){
+      mostrarMensaje('err','El usuario no es parte de este foro.');
+      resultado.innerHTML = `<div class="form-contenido">❌ Acceso denegado</div>`;
+      return;
+    }
+
+    // Caso 1: Foro disponible
+    mostrarMensaje('ok','Foro abierto exitosamente.');
+    resultado.innerHTML = foro.innerHTML;
+
+    // Cambiar el botón dentro del detalle a "Comentar"
+    const boton = resultado.querySelector("button");
+    if(boton){
+      boton.textContent = "Comentar";
+      boton.onclick = () => {
+        mostrarMensaje('ok','Puedes escribir tu comentario aquí.');
+      };
+    }
+  }
+
+  function mostrarMensaje(tipo,texto){
+    mensaje.className = 'msg ' + (tipo === 'ok' ? 'ok' : 'err');
+    mensaje.textContent = texto;
+    mensaje.style.display = 'block';
+  }
+
+  // Año dinámico en footer
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

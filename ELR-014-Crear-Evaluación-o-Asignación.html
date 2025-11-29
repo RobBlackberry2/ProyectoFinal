@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ELR-014 - Crear Evaluación o Asignación</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">NHS</div>
+        <div>
+          <div style="font-weight:700">New Hope School</div>
+          <div style="font-size:12px;color:var(--muted)">Página oficial</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Inicio</a>
+        <a href="#servicios">Administrativo</a>
+        <a href="#servicios">Gestión de Usuarios</a>
+        <a href="#servicios">Reportes</a>
+        <a href="ELR-015-Editar-Evaluaciones.html">E-Learning</a>
+        <a href="index.html">Contacto</a>
+      </nav>
+    </header>
+
+    <main class="hero">
+      <div class="card">
+        <h1>ELR-014: Crear Evaluación o Asignación</h1>
+        <p class="lead">
+          <strong>Historia de usuario:</strong> Como docente quiero crear evaluaciones o asignaciones para medir el aprendizaje de los alumnos.
+        </p>
+
+        <form id="formEvaluacion">
+
+          <label>ID Clase Virtual</label>
+          <input type="text" id="id_clase_virtual" required />
+
+          <label>Título de la evaluación</label>
+          <input type="text" id="titulo" required />
+
+          <label>Valor</label>
+          <input type="text" id="valor" required />
+
+          <label>Puntos</label>
+          <input type="number" id="puntos" min="1" required />
+
+          <label>Instrucciones</label>
+          <textarea id="instrucciones" rows="4" required></textarea>
+
+          <label>Fecha de inicio</label>
+          <input type="date" id="fecha_inicio" required />
+
+          <label>Fecha de entrega</label>
+          <input type="date" id="fecha_entrega" required />
+
+          <button type="submit">Crear Evaluación</button>
+          <div id="mensaje" class="msg"></div>
+        </form>
+      </div>
+    </main>
+
+    <footer>
+      <div style="max-width:800px;margin:0 auto">
+        © <span id="year"></span> New Hope Digital Learning
+        <span style="color:var(--muted)">Versión demo</span>
+      </div>
+    </footer>
+  </div>
+
+<script>
+  const form = document.getElementById('formEvaluacion');
+  const mensaje = document.getElementById('mensaje');
+
+  // Datos simulados de evaluaciones existentes
+  const evaluacionesExistentes = [
+    { valor: "Examen Diagnóstico", fecha_entrega: "2025-11-30", clase_virtual: "MAT-8-1" }
+  ];
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const datos = {
+      titulo: titulo.value.trim(),
+      valor: valor.value.trim(),
+      puntos: puntos.value.trim(),
+      instrucciones: instrucciones.value.trim(),
+      fecha_entrega: fecha_entrega.value.trim(),
+      clase_virtual: id_clase_virtual.value.trim()
+    };
+
+    // Validación: campos vacíos
+    for(const campo in datos){
+      if(!datos[campo]){
+        mostrarMensaje('err','Algún espacio quedó en blanco.');
+        return;
+      }
+    }
+
+    // Validación: caracteres inválidos
+    const regexInvalido = /[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\-\.\,]/;
+    if(regexInvalido.test(datos.valor) || regexInvalido.test(datos.instrucciones) || regexInvalido.test(datos.clase_virtual)){
+      mostrarMensaje('err','Se ingresaron caracteres inválidos.');
+      return;
+    }
+
+    // Validación: duplicado
+    const duplicada = evaluacionesExistentes.some(e =>
+      e.valor.toLowerCase() === datos.valor.toLowerCase() &&
+      e.fecha_entrega === datos.fecha_entrega &&
+      e.clase_virtual.toLowerCase() === datos.clase_virtual.toLowerCase()
+    );
+
+    if(duplicada){
+      mostrarMensaje('err','La evaluación o asignación ya existe dentro de esta clase virtual.');
+      return;
+    }
+
+    // Si todo está correcto
+    mostrarMensaje('ok','La evaluación o asignación fue creada exitosamente.');
+    form.reset();
+  });
+
+  function mostrarMensaje(tipo,texto){
+    mensaje.className = 'msg ' + (tipo === 'ok' ? 'ok' : 'err');
+    mensaje.textContent = texto;
+    mensaje.style.display = 'block';
+  }
+
+  // Año dinámico en footer
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ELR-034 - Evaluar con Rubros</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="brand">
+      <div class="logo">NHS</div>
+      <div>
+        <div style="font-weight:700">New Hope School</div>
+        <div style="font-size:12px;color:var(--muted)">Página oficial</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="#servicios">Administrativo</a>
+      <a href="#servicios">Gestión de Usuarios</a>
+      <a href="#servicios">Reportes</a>
+      <a href="ELR-035 - Crear Métricas de Gamificación.html">E-Learning</a>
+      <a href="index.html">Contacto</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <div class="card">
+      <h1>ELR-034: Evaluar con Rubros</h1>
+      <p class="lead">
+        <strong>Historia de usuario:</strong> Como docente quiero evaluar las tareas asignando el puntaje obtenido en los rubros (criterios de evaluación) para otorgar una nota según los rubros.
+      </p>
+
+      <!-- Formulario de evaluación -->
+      <form id="formEvaluar">
+        <label>ID Evaluación</label>
+        <input type="text" id="id_evaluacion" required />
+
+        <label>Rubro: Contenido (máx 40)</label>
+        <input type="number" id="contenido" min="0" max="40" required />
+
+        <label>Rubro: Presentación (máx 30)</label>
+        <input type="number" id="presentacion" min="0" max="30" required />
+
+        <label>Rubro: Originalidad (máx 30)</label>
+        <input type="number" id="originalidad" min="0" max="30" required />
+
+        <button type="submit">Asignar Puntajes</button>
+        <div id="mensaje" class="msg"></div>
+      </form>
+
+      <!-- Resultado -->
+      <h3 style="margin-top:20px">Resultado de Evaluación</h3>
+      <div id="resultado" class="lista"></div>
+    </div>
+  </main>
+
+  <footer>
+    <div style="max-width:800px;margin:0 auto">
+      © <span id="year"></span> New Hope Digital Learning
+      <span style="color:var(--muted)">Versión demo</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+  const form = document.getElementById('formEvaluar');
+  const mensaje = document.getElementById('mensaje');
+  const resultado = document.getElementById('resultado');
+
+  // Simulación de permisos
+  const usuario = { id_usuario: "DOC-001", rol_usuario: "docente" };
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    // Validar permisos
+    if(usuario.rol_usuario !== "docente" && usuario.rol_usuario !== "administrador"){
+      mostrarMensaje('err','No tiene permisos para evaluar.');
+      return;
+    }
+
+    const datos = {
+      id_evaluacion: id_evaluacion.value.trim(),
+      contenido: parseInt(contenido.value.trim()),
+      presentacion: parseInt(presentacion.value.trim()),
+      originalidad: parseInt(originalidad.value.trim())
+    };
+
+    // Validación: campos vacíos
+    if(!datos.id_evaluacion || isNaN(datos.contenido) || isNaN(datos.presentacion) || isNaN(datos.originalidad)){
+      mostrarMensaje('err','Se dejaron espacios obligatorios sin rellenar.');
+      return;
+    }
+
+    // Validación: valores máximos
+    if(datos.contenido > 40 || datos.presentacion > 30 || datos.originalidad > 30){
+      mostrarMensaje('err','Los rubros no deben sobrepasar el valor que tienen definido.');
+      return;
+    }
+
+    // Calcular nota final
+    const notaFinal = datos.contenido + datos.presentacion + datos.originalidad;
+
+    // Asignación correcta
+    mostrarMensaje('ok','Los valores de los rubros fueron asignados correctamente.');
+    resultado.innerHTML = `<div class="form-contenido">
+      <strong>ID Evaluación:</strong> ${datos.id_evaluacion}<br>
+      Contenido: ${datos.contenido}/40<br>
+      Presentación: ${datos.presentacion}/30<br>
+      Originalidad: ${datos.originalidad}/30<br>
+      Nota final: ${notaFinal}/100
+    </div>`;
+    form.reset();
+  });
+
+  function mostrarMensaje(tipo,texto){
+    mensaje.className = 'msg ' + (tipo === 'ok' ? 'ok' : 'err');
+    mensaje.textContent = texto;
+    mensaje.style.display = 'block';
+  }
+
+  // Año dinámico en footer
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

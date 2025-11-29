@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ELR-006 - Eliminar Clases Virtuales</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">NHS</div>
+        <div>
+          <div style="font-weight:700">New Hope School</div>
+          <div style="font-size:12px;color:var(--muted)">Página oficial</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Inicio</a>
+        <a href="#servicios">Administrativo</a>
+        <a href="#servicios">Gestión de Usuarios</a>
+        <a href="#servicios">Reportes</a>
+        <a href="Elr-007-cargar-contenido.html">E-Learning</a>
+        <a href="index.html">Contacto</a>
+      </nav>
+    </header>
+
+    <main class="hero">
+      <div class="card">
+        <h1>ELR-006: Eliminar Clases Virtuales</h1>
+        <p class="lead">
+          <strong>Historia de usuario:</strong> Como administrador quiero eliminar clases virtuales que no serán utilizadas al terminar el año lectivo para mantener el sistema actualizado.
+        </p>
+
+        <div id="listaClases">
+          <!-- Ejemplo de clase -->
+          <div class="form-contenido">
+            <h3>Matemática Avanzada (8-1)</h3>
+            <p>Profesor: Carlos Jiménez</p>
+            <button class="btn-eliminar" onclick="confirmarEliminacion('Matemática Avanzada (8-1)')">Eliminar</button>
+          </div>
+
+          <div class="form-contenido">
+            <h3>Historia Universal (8-2)</h3>
+            <p>Profesor: Ana Solano</p>
+            <button class="btn-eliminar" onclick="confirmarEliminacion('Historia Universal (8-2)')">Eliminar</button>
+          </div>
+
+          <div class="form-contenido">
+            <h3>Inglés Conversacional (8-1)</h3>
+            <p>Profesor: María López</p>
+            <button class="btn-eliminar" onclick="confirmarEliminacion('Inglés Conversacional (8-1)')">Eliminar</button>
+          </div>
+        </div>
+
+        <!-- Mensajes -->
+        <div id="mensaje" class="msg"></div>
+      </div>
+    </main>
+
+    <footer>
+      <div style="max-width:800px;margin:0 auto">
+        © <span id="year"></span> New Hope Digital Learning
+        <span style="color:var(--muted)">Versión demo</span>
+      </div>
+    </footer>
+  </div>
+
+<script>
+  const mensaje = document.getElementById('mensaje');
+
+  function confirmarEliminacion(nombreClase){
+    const confirmar = confirm(`¿Desea eliminar la clase virtual "${nombreClase}"?`);
+
+    if(confirmar){
+      // Simulación de error aleatorio (ejemplo de fallo de conexión)
+      const fallo = Math.random() < 0.2; // 20% probabilidad de error
+      if(fallo){
+        mostrarMensaje('err', 'No fue posible actualizar la información. Intente más tarde.');
+        return;
+      }
+
+      // Eliminación exitosa
+      mostrarMensaje('ok', `La clase "${nombreClase}" fue eliminada exitosamente.`);
+      // Eliminar del DOM
+      const clases = document.querySelectorAll('.form-contenido');
+      clases.forEach(c => {
+        if(c.querySelector('h3').textContent === nombreClase){
+          c.remove();
+        }
+      });
+    } else {
+      // Cancelación
+      mostrarMensaje('err', `La clase "${nombreClase}" no fue eliminada.`);
+    }
+  }
+
+  function mostrarMensaje(tipo,texto){
+    mensaje.className = 'msg ' + (tipo === 'ok' ? 'ok' : 'err');
+    mensaje.textContent = texto;
+    mensaje.style.display = 'block';
+  }
+
+  // Año dinámico en footer
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

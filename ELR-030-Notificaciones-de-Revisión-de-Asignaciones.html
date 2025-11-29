@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ELR-030 - Notificaciones de Revisión de Asignaciones</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="brand">
+      <div class="logo">NHS</div>
+      <div>
+        <div style="font-weight:700">New Hope School</div>
+        <div style="font-size:12px;color:var(--muted)">Página oficial</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="#servicios">Administrativo</a>
+      <a href="#servicios">Gestión de Usuarios</a>
+      <a href="#servicios">Reportes</a>
+      <a href="ELR-031-Eliminar-Entregas.html">E-Learning</a>
+      <a href="index.html">Contacto</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <div class="card">
+      <h1>ELR-030: Notificaciones de Revisión de Asignaciones</h1>
+      <p class="lead">
+        <strong>Historia de usuario:</strong> Como docente quiero recibir notificaciones recordándome revisar asignaciones para evitar que pase la fecha límite establecida por el reglamento.
+      </p>
+
+      <h3>Asignaciones pendientes de revisión</h3>
+      <div id="listaAsignaciones" class="lista">
+        <!-- Caso 1: Recordatorio -->
+        <div class="form-contenido" data-id="A1" data-fecha_limite="2025-11-10" data-revisada="false">
+          <h3>Tarea Semana 1</h3>
+          <p>Fecha límite de entrega: 10/11/2025</p>
+          <button onclick="verNotificacion('A1')">Ver notificación</button>
+        </div>
+
+        <!-- Caso 2: No revisada a tiempo -->
+        <div class="form-contenido" data-id="A2" data-fecha_limite="2025-11-01" data-revisada="false">
+          <h3>Examen Diagnóstico</h3>
+          <p>Fecha límite de entrega: 01/12/2025</p>
+          <button onclick="verNotificacion('A2')">Ver notificación</button>
+        </div>
+      </div>
+
+      <!-- Mensajes -->
+      <div id="mensaje" class="msg"></div>
+
+      <!-- Resultado -->
+      <h3 style="margin-top:20px">Detalle de Notificación</h3>
+      <div id="resultado" class="lista"></div>
+    </div>
+  </main>
+
+  <footer>
+    <div style="max-width:800px;margin:0 auto">
+      © <span id="year"></span> New Hope Digital Learning
+      <span style="color:var(--muted)">Versión demo</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+  const mensaje = document.getElementById('mensaje');
+  const resultado = document.getElementById('resultado');
+
+  function verNotificacion(id){
+    const asignacion = document.querySelector(`[data-id="${id}"]`);
+    const fechaLimite = new Date(asignacion.dataset.fecha_limite);
+    const fechaActual = new Date("2025-11-24"); // simulación de fecha actual
+    const diferenciaDias = Math.floor((fechaActual - fechaLimite) / (1000*60*60*24));
+
+    if(diferenciaDias >= 7 && diferenciaDias < 14){
+      mostrarMensaje('ok','Recordatorio: La asignación está próxima a cumplir el plazo de revisión.');
+      resultado.innerHTML = `<div class="form-contenido">
+        <strong>${asignacion.querySelector("h3").textContent}</strong><br>
+        Fecha límite de entrega: ${fechaLimite.toLocaleDateString()}<br>
+        Estado: ⚠️ Recordatorio de revisión (una semana antes de límite de 2 semanas)
+      </div>`;
+    }
+    else if(diferenciaDias >= 14){
+      mostrarMensaje('err','La asignación sobrepasó la fecha límite de revisión. Revísela lo antes posible.');
+      resultado.innerHTML = `<div class="form-contenido">
+        <strong>${asignacion.querySelector("h3").textContent}</strong><br>
+        Fecha límite de entrega: ${fechaLimite.toLocaleDateString()}<br>
+        Estado: ❌ No revisada a tiempo (más de 2 semanas)
+      </div>`;
+    }
+    else{
+      mostrarMensaje('ok','La asignación aún está dentro del plazo de revisión.');
+      resultado.innerHTML = `<div class="form-contenido">
+        <strong>${asignacion.querySelector("h3").textContent}</strong><br>
+        Fecha límite de entrega: ${fechaLimite.toLocaleDateString()}<br>
+        Estado: ⏳ Dentro del plazo
+      </div>`;
+    }
+  }
+
+  function mostrarMensaje(tipo,texto){
+    mensaje.className = 'msg ' + (tipo === 'ok' ? 'ok' : 'err');
+    mensaje.textContent = texto;
+    mensaje.style.display = 'block';
+  }
+
+  // Año dinámico en footer
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

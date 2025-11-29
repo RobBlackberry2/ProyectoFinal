@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ELR-037 - Crear Pruebas de Gamificación</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="brand">
+      <div class="logo">NHS</div>
+      <div>
+        <div style="font-weight:700">New Hope School</div>
+        <div style="font-size:12px;color:var(--muted)">Página oficial</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="#servicios">Administrativo</a>
+      <a href="#servicios">Gestión de Usuarios</a>
+      <a href="#servicios">Reportes</a>
+      <a href="ELR-038 - Actualizar Pruebas de Gamificación.html">E-Learning</a>
+      <a href="index.html">Contacto</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <div class="card">
+      <h1>ELR-037: Crear Pruebas de Gamificación</h1>
+      <p class="lead">
+        <strong>Historia de usuario:</strong> Como docente quiero crear pruebas especiales de gamificación para promover la participación estudiantil dentro de la gamificación.
+      </p>
+
+      <!-- Formulario de creación de prueba -->
+      <form id="formPrueba">
+        <label>ID Docente</label>
+        <input type="text" id="id_docente" required />
+
+        <label>ID Clase Virtual</label>
+        <input type="text" id="id_clase_virtual" required />
+
+        <label>Nombre de la Prueba</label>
+        <input type="text" id="nombre_prueba" required />
+
+        <h3>Preguntas y Respuestas</h3>
+        <div id="preguntasContainer">
+          <div class="pregunta">
+            <label>Pregunta</label>
+            <input type="text" class="preguntaInput" required />
+            <label>Respuesta</label>
+            <input type="text" class="respuestaInput" required />
+          </div>
+        </div>
+
+        <button type="button" id="agregarPregunta">Agregar otra pregunta</button>
+        <button type="submit">Crear Prueba</button>
+        <div id="mensaje" class="msg"></div>
+      </form>
+
+      <!-- Resultado -->
+      <h3 style="margin-top:20px">Pruebas creadas</h3>
+      <div id="resultado" class="lista"></div>
+    </div>
+  </main>
+
+  <footer>
+    <div style="max-width:800px;margin:0 auto">
+      © <span id="year"></span> New Hope Digital Learning
+      <span style="color:var(--muted)">Versión demo</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+  const form = document.getElementById('formPrueba');
+  const mensaje = document.getElementById('mensaje');
+  const resultado = document.getElementById('resultado');
+  const preguntasContainer = document.getElementById('preguntasContainer');
+  const agregarBtn = document.getElementById('agregarPregunta');
+
+  let pruebas = [];
+
+  // Botón para agregar más preguntas dinámicamente
+  agregarBtn.addEventListener('click', () => {
+    const nuevaPregunta = document.createElement('div');
+    nuevaPregunta.classList.add('pregunta');
+    nuevaPregunta.innerHTML = `
+      <label>Pregunta</label>
+      <input type="text" class="preguntaInput" required />
+      <label>Respuesta</label>
+      <input type="text" class="respuestaInput" required />
+    `;
+    preguntasContainer.appendChild(nuevaPregunta);
+  });
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const idDocente = document.getElementById('id_docente').value.trim();
+    const idClase = document.getElementById('id_clase_virtual').value.trim();
+    const nombrePrueba = document.getElementById('nombre_prueba').value.trim();
+
+    if(!idDocente || !idClase || !nombrePrueba){
+      mostrarMensaje('err','Se dejaron espacios obligatorios sin rellenar.');
+      return;
+    }
+
+    const preguntas = [];
+    const preguntasInputs = document.querySelectorAll('.preguntaInput');
+    const respuestasInputs = document.querySelectorAll('.respuestaInput');
+
+    for(let i=0; i<preguntasInputs.length; i++){
+      const pregunta = preguntasInputs[i].value.trim();
+      const respuesta = respuestasInputs[i].value.trim();
+      if(!pregunta || !respuesta){
+        mostrarMensaje('err','Debe completar todas las preguntas y respuestas.');
+        return;
+      }
+      preguntas.push({pregunta, respuesta});
+    }
+
+    // Registro correcto
+    const datos = {id_docente:idDocente, id_clase_virtual:idClase, nombre_prueba:nombrePrueba, preguntas};
+    pruebas.push(datos);
+
+    mostrarMensaje('ok','La prueba de gamificación fue creada exitosamente.');
+    resultado.innerHTML = pruebas.map(p=>`
+      <div class="form-contenido">
+        <strong>${p.nombre_prueba}</strong><br>
+        Docente: ${p.id_docente} | Clase: ${p.id_clase_virtual}<br>
+        <ul>
+          ${p.preguntas.map(q=>`<li><strong>${q.pregunta}</strong> → ${q.respuesta}</li>`).join("")}
+        </ul>
+      </div>
+    `).join("");
+
+    form.reset();
+    preguntasContainer.innerHTML = `
+      <div class="pregunta">
+        <label>Pregunta</label>
+        <input type="text" class="preguntaInput" required />
+        <label>Respuesta</label>
+        <input type="text" class="respuestaInput" required />
+      </div>`;
+  });
+
+  function mostrarMensaje(tipo,texto){
+    mensaje.className = 'msg ' + (tipo === 'ok' ? 'ok' : 'err');
+    mensaje.textContent = texto;
+    mensaje.style.display = 'block';
+  }
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

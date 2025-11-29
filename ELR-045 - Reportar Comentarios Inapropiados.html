@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ELR-045 - Reportar Comentarios Inapropiados</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="brand">
+      <div class="logo">NHS</div>
+      <div>
+        <div style="font-weight:700">New Hope School</div>
+        <div style="font-size:12px;color:var(--muted)">Página oficial</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="#servicios">Administrativo</a>
+      <a href="#servicios">Gestión de Usuarios</a>
+      <a href="#servicios">Reportes</a>
+      <a href="ELR-046 - Notificaciones de Reportes en Foros.html">E-Learning</a>
+      <a href="index.html">Contacto</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <div class="card">
+      <h1>ELR-045: Reportar Comentarios Inapropiados</h1>
+      <p class="lead">
+        <strong>Historia de usuario:</strong> Como estudiante quiero reportar comentarios inapropiados para mantener el espacio respetuoso y educativo.
+      </p>
+
+      <h3>Comentarios en el foro</h3>
+      <div id="listaComentarios" class="lista">
+        <!-- Comentario válido -->
+        <div class="form-contenido" data-id="C1" data-existe="true">
+          <strong>Estudiante A:</strong> Este tema es irrelevante.
+          <button onclick="reportarComentario('C1')">Reportar</button>
+        </div>
+
+        <!-- Comentario inexistente -->
+        <div class="form-contenido" data-id="C2" data-existe="false">
+          <strong>Estudiante B:</strong> (Comentario eliminado)
+          <button onclick="reportarComentario('C2')">Reportar</button>
+        </div>
+      </div>
+
+      <!-- Mensajes -->
+      <div id="mensaje" class="msg"></div>
+
+      <!-- Resultado -->
+      <h3 style="margin-top:20px">Acciones realizadas</h3>
+      <div id="resultado" class="lista"></div>
+    </div>
+  </main>
+
+  <footer>
+    <div style="max-width:800px;margin:0 auto">
+      © <span id="year"></span> New Hope Digital Learning
+      <span style="color:var(--muted)">Versión demo</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+  const mensaje = document.getElementById('mensaje');
+  const resultado = document.getElementById('resultado');
+
+  // Simulación de reportes duplicados
+  let reportes = {};
+
+  function reportarComentario(id){
+    // Simulación de error de conexión (10% probabilidad)
+    const falloConexion = Math.random() < 0.1;
+    if(falloConexion){
+      mostrarMensaje('err','No fue posible realizar la acción. Intente nuevamente más tarde.');
+      return;
+    }
+
+    const comentario = document.querySelector(`[data-id="${id}"]`);
+    const existe = comentario.dataset.existe === "true";
+
+    // Caso 2: comentario inexistente
+    if(!existe){
+      comentario.remove();
+      mostrarMensaje('err','El comentario ya no existe. Se eliminó para evitar reportes duplicados.');
+      return;
+    }
+
+    // Caso 3: reportes duplicados
+    if(!reportes[id]) reportes[id] = 0;
+    reportes[id]++;
+
+    // Caso 1: reporte correcto
+    mostrarMensaje('ok','El comentario fue reportado correctamente. Notificación enviada al dueño del foro.');
+    resultado.innerHTML += `<div class="form-contenido">
+      Reporte #${reportes[id]} del comentario ${id} → Notificación enviada
+    </div>`;
+  }
+
+  function mostrarMensaje(tipo,texto){
+    mensaje.className = 'msg ' + (tipo === 'ok' ? 'ok' : 'err');
+    mensaje.textContent = texto;
+    mensaje.style.display = 'block';
+  }
+
+  // Año dinámico en footer
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

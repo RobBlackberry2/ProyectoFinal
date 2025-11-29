@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ELR-032 - Crear Rubros de Evaluación</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="brand">
+      <div class="logo">NHS</div>
+      <div>
+        <div style="font-weight:700">New Hope School</div>
+        <div style="font-size:12px;color:var(--muted)">Página oficial</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="#servicios">Administrativo</a>
+      <a href="#servicios">Gestión de Usuarios</a>
+      <a href="#servicios">Reportes</a>
+      <a href="ELR-033 - Modificar Rubros de Evaluación.html">E-Learning</a>
+      <a href="index.html">Contacto</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <div class="card">
+      <h1>ELR-032: Crear Rubros de Evaluación</h1>
+      <p class="lead">
+        <strong>Historia de usuario:</strong> Como docente quiero crear rubros (criterios de evaluación) para definir cómo se califican las tareas.
+      </p>
+
+      <!-- Formulario de creación de rubros -->
+      <form id="formRubros">
+        <label>ID Evaluación</label>
+        <input type="text" id="id_evaluacion" required />
+
+        <h3>Rubros</h3>
+        <div id="rubrosContainer">
+          <!-- Primer rubro -->
+          <div class="rubro">
+            <label>Nombre del rubro</label>
+            <input type="text" class="nombre_rubro" required />
+
+            <label>Descripción</label>
+            <textarea class="descripcion" rows="3" required></textarea>
+
+            <label>Valor (%)</label>
+            <input type="number" class="valor" min="1" max="100" required />
+          </div>
+        </div>
+
+        <button type="button" id="agregarRubro">Agregar otro rubro</button>
+        <button type="submit">Crear Rubros</button>
+        <div id="mensaje" class="msg"></div>
+      </form>
+
+      <!-- Resultado -->
+      <h3 style="margin-top:20px">Rubros creados</h3>
+      <div id="resultado" class="lista"></div>
+    </div>
+  </main>
+
+  <footer>
+    <div style="max-width:800px;margin:0 auto">
+      © <span id="year"></span> New Hope Digital Learning
+      <span style="color:var(--muted)">Versión demo</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+  const form = document.getElementById('formRubros');
+  const mensaje = document.getElementById('mensaje');
+  const resultado = document.getElementById('resultado');
+  const rubrosContainer = document.getElementById('rubrosContainer');
+  const agregarBtn = document.getElementById('agregarRubro');
+
+  let rubros = [];
+
+  // Botón para agregar más rubros dinámicamente
+  agregarBtn.addEventListener('click', () => {
+    const nuevoRubro = document.createElement('div');
+    nuevoRubro.classList.add('rubro');
+    nuevoRubro.innerHTML = `
+      <label>Nombre del rubro</label>
+      <input type="text" class="nombre_rubro" required />
+
+      <label>Descripción</label>
+      <textarea class="descripcion" rows="3" required></textarea>
+
+      <label>Valor (%)</label>
+      <input type="number" class="valor" min="1" max="100" required />
+    `;
+    rubrosContainer.appendChild(nuevoRubro);
+  });
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const idEvaluacion = document.getElementById('id_evaluacion').value.trim();
+    if(!idEvaluacion){
+      mostrarMensaje('err','Debe ingresar el ID de la evaluación.');
+      return;
+    }
+
+    rubros = [];
+    const nombres = document.querySelectorAll('.nombre_rubro');
+    const descripciones = document.querySelectorAll('.descripcion');
+    const valores = document.querySelectorAll('.valor');
+
+    for(let i=0; i<nombres.length; i++){
+      const nombre = nombres[i].value.trim();
+      const descripcion = descripciones[i].value.trim();
+      const valor = parseInt(valores[i].value.trim());
+
+      if(!nombre || !descripcion || isNaN(valor)){
+        mostrarMensaje('err','Se dejaron espacios obligatorios sin rellenar.');
+        return;
+      }
+
+      const regex = /^[a-zA-Z0-9\s]+$/;
+      if(!regex.test(nombre)){
+        mostrarMensaje('err','Se ingresaron caracteres inválidos en el nombre del rubro.');
+        return;
+      }
+
+      rubros.push({id_evaluacion:idEvaluacion,nombre_rubro:nombre,descripcion:descripcion,valor:valor});
+    }
+
+    // Validación: suma de valores debe ser 100
+    const suma = rubros.reduce((acc,r)=>acc+r.valor,0);
+    if(suma !== 100){
+      mostrarMensaje('err','La suma de los rubros siempre debe ser 100%. Actualmente: '+suma+'%.');
+      return;
+    }
+
+    mostrarMensaje('ok','Los rubros fueron creados y ligados a la evaluación.');
+    resultado.innerHTML = rubros.map(r=>`
+      <div class="form-contenido">
+        <strong>${r.nombre_rubro}</strong><br>
+        Descripción: ${r.descripcion}<br>
+        Valor: ${r.valor}%<br>
+        Evaluación: ${r.id_evaluacion}
+      </div>
+    `).join("");
+    form.reset();
+    rubrosContainer.innerHTML = `
+      <div class="rubro">
+        <label>Nombre del rubro</label>
+        <input type="text" class="nombre_rubro" required />
+        <label>Descripción</label>
+        <textarea class="descripcion" rows="3" required></textarea>
+        <label>Valor (%)</label>
+        <input type="number" class="valor" min="1" max="100" required />
+      </div>`;
+  });
+
+  function mostrarMensaje(tipo,texto){
+    mensaje.className = 'msg ' + (tipo === 'ok' ? 'ok' : 'err');
+    mensaje.textContent = texto;
+    mensaje.style.display = 'block';
+  }
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

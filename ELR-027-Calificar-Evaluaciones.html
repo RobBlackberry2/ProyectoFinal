@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ELR-027 - Calificar Evaluaciones</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="brand">
+      <div class="logo">NHS</div>
+      <div>
+        <div style="font-weight:700">New Hope School</div>
+        <div style="font-size:12px;color:var(--muted)">Página oficial</div>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="#servicios">Administrativo</a>
+      <a href="#servicios">Gestión de Usuarios</a>
+      <a href="#servicios">Reportes</a>
+      <a href="ELR-028-Revisar-Calificaciones-y-Retroalimentación.html">E-Learning</a>
+      <a href="index.html">Contacto</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <div class="card">
+      <h1>ELR-027: Calificar Evaluaciones</h1>
+      <p class="lead">
+        <strong>Historia de usuario:</strong> Como docente quiero poder calificar las evaluaciones tanto grupales como individuales para asignar notas y retroalimentación.
+      </p>
+
+      <!-- Formulario de calificación -->
+      <form id="formCalificar">
+        <label>ID Evaluación</label>
+        <input type="text" id="id_evaluacion" required />
+
+        <label>Tipo de tarea</label>
+        <select id="tipo_tarea" required>
+          <option value="">Seleccione</option>
+          <option value="individual">Individual</option>
+          <option value="grupal">Grupal</option>
+        </select>
+
+        <label>Nota</label>
+        <input type="number" id="nota" min="0" max="100" />
+
+        <label>Retroalimentación</label>
+        <textarea id="retroalimentacion" rows="3"></textarea>
+
+        <button type="submit">Guardar Calificación</button>
+        <div id="mensaje" class="msg"></div>
+      </form>
+
+      <!-- Resultado -->
+      <h3 style="margin-top:20px">Resultado</h3>
+      <div id="resultado" class="lista"></div>
+    </div>
+  </main>
+
+  <footer>
+    <div style="max-width:800px;margin:0 auto">
+      © <span id="year"></span> New Hope Digital Learning
+      <span style="color:var(--muted)">Versión demo</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+  const form = document.getElementById('formCalificar');
+  const mensaje = document.getElementById('mensaje');
+  const resultado = document.getElementById('resultado');
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const idEvaluacion = id_evaluacion.value.trim();
+    const tipoTarea = tipo_tarea.value.trim();
+    const notaValor = nota.value.trim();
+    const retro = retroalimentacion.value.trim();
+
+    // Simulación de error de conexión (10% probabilidad)
+    const falloConexion = Math.random() < 0.1;
+    if(falloConexion){
+      mostrarMensaje('err','No fue posible realizar la acción. Intente nuevamente más tarde.');
+      return;
+    }
+
+    // Validación: campos vacíos
+    if(!idEvaluacion || !tipoTarea){
+      mostrarMensaje('err','Hay campos obligatorios sin completar.');
+      return;
+    }
+
+    // Caso 2: Calificación automática (formularios)
+    if(tipoTarea === "formulario"){
+      const respuestasCorrectas = ["A","B","C"];
+      const respuestasEstudiante = ["A","","C"]; // simulación
+      let aciertos = 0;
+      respuestasEstudiante.forEach((r,i)=>{
+        if(r && r === respuestasCorrectas[i]) aciertos++;
+      });
+      const notaAuto = (aciertos / respuestasCorrectas.length) * 100;
+      mostrarMensaje('ok','La tarea fue calificada automáticamente.');
+      resultado.innerHTML = `<div class="form-contenido">
+        <strong>ID Evaluación:</strong> ${idEvaluacion}<br>
+        Tipo: Formulario<br>
+        Nota automática: ${notaAuto.toFixed(2)}%
+      </div>`;
+      return;
+    }
+
+    // Caso 3: Tarea no enviada
+    if(!notaValor && tipoTarea !== "formulario"){
+      mostrarMensaje('err','La tarea no fue enviada. Se asigna nota 0.');
+      resultado.innerHTML = `<div class="form-contenido">
+        <strong>ID Evaluación:</strong> ${idEvaluacion}<br>
+        Tipo: ${tipoTarea}<br>
+        Nota: 0<br>
+        Estado: ❌ No enviada
+      </div>`;
+      return;
+    }
+
+    // Caso 4: Tarea incompleta (simulación: nota < 50)
+    if(notaValor && parseInt(notaValor) < 50){
+      mostrarMensaje('ok','La tarea estaba incompleta. Se calificaron las respuestas enviadas.');
+      resultado.innerHTML = `<div class="form-contenido">
+        <strong>ID Evaluación:</strong> ${idEvaluacion}<br>
+        Tipo: ${tipoTarea}<br>
+        Nota: ${notaValor}<br>
+        Estado: ⚠️ Incompleta
+      </div>`;
+      return;
+    }
+
+    // Caso 1: Calificación exitosa
+    mostrarMensaje('ok','La tarea fue revisada con éxito.');
+    resultado.innerHTML = `<div class="form-contenido">
+      <strong>ID Evaluación:</strong> ${idEvaluacion}<br>
+      Tipo: ${tipoTarea}<br>
+      Nota: ${notaValor}<br>
+      Retroalimentación: ${retro || "Sin comentarios"}<br>
+      Estado: ✅ Calificada
+    </div>`;
+    form.reset();
+  });
+
+  function mostrarMensaje(tipo,texto){
+    mensaje.className = 'msg ' + (tipo === 'ok' ? 'ok' : 'err');
+    mensaje.textContent = texto;
+    mensaje.style.display = 'block';
+  }
+
+  // Año dinámico en footer
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

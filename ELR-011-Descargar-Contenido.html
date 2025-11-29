@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ELR-011 - Descargar Contenido</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">NHS</div>
+        <div>
+          <div style="font-weight:700">New Hope School</div>
+          <div style="font-size:12px;color:var(--muted)">Página oficial</div>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">Inicio</a>
+        <a href="#servicios">Administrativo</a>
+        <a href="#servicios">Gestión de Usuarios</a>
+        <a href="#servicios">Reportes</a>
+        <a href="ELR-012-Bitácora-de-Cambios.html">E-Learning</a>
+        <a href="index.html">Contacto</a>
+      </nav>
+    </header>
+
+    <main class="hero">
+      <div class="card">
+        <h1>ELR-011: Descargar Contenido</h1>
+        <p class="lead">
+          <strong>Historia de usuario:</strong> Como usuario quiero descargar el contenido específico que necesito para tener acceso a él sin conexión a internet.
+        </p>
+
+        <h3>Curso</h3>
+        <div id="listaArchivos" class="lista">
+          <div class="form-contenido" data-id="C1" data-estado="disponible">
+            <h3>Semana 1 - Introducción.pdf</h3>
+            <p>Clase: MAT-8-1 | Subido por: Carlos Jiménez</p>
+            <a href="https://www.mep.go.cr/sites/default/files/2023-09/centros-educativos-privados.xlsx "><button onclick="descargarArchivo('C1')">Descargar</button></a>   
+          </div>
+
+          <div class="form-contenido" data-id="C2" data-estado="no_disponible">
+            <h3>Semana 2 - Ejercicios.png</h3>
+            <p>Clase: MAT-8-1 | Subido por: Carlos Jiménez</p>
+           <button onclick="descargarArchivo('C2')">Descargar</button> 
+          </div>
+
+          <div class="form-contenido" data-id="C3" data-estado="error">
+            <h3>Semana 3 - Video.mp4</h3>
+            <p>Clase: MAT-8-1 | Subido por: Carlos Jiménez</p>
+            <button onclick="descargarArchivo('C3')">Descargar</button>   
+          </div>
+        </div>
+
+        <!-- Mensajes -->
+        <div id="mensaje" class="msg"></div>
+      </div>
+    </main>
+
+    <footer>
+      <div style="max-width:800px;margin:0 auto">
+        © <span id="year"></span> New Hope Digital Learning
+        <span style="color:var(--muted)">Versión demo</span>
+      </div>
+    </footer>
+  </div>
+
+<script>
+  const mensaje = document.getElementById('mensaje');
+
+  function descargarArchivo(id){
+    const archivo = document.querySelector(`[data-id="${id}"]`);
+    const estado = archivo.dataset.estado;
+
+    if(estado === "disponible"){
+      // Simulación de descarga exitosa
+      mostrarMensaje('ok','El archivo fue descargado exitosamente.');
+    }
+    else if(estado === "no_disponible"){
+      mostrarMensaje('err','El archivo no está disponible en el sistema.');
+    }
+    else if(estado === "error"){
+      mostrarMensaje('err','No fue posible descargar el archivo. Intente más tarde.');
+    }
+  }
+
+  function mostrarMensaje(tipo,texto){
+    mensaje.className = 'msg ' + (tipo === 'ok' ? 'ok' : 'err');
+    mensaje.textContent = texto;
+    mensaje.style.display = 'block';
+  }
+
+  // Año dinámico en footer
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
